@@ -1,9 +1,12 @@
-trigger AccountTrigger on Account (before insert, after insert, before update, after update) {
+trigger AccountTrigger on Account (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
     //Scenario 1 Trigger to copy billing address to shipping address on insert of account
-    //Scenario 2 Treigger to throw error if annual revenue is less than 1000
+    //Scenario 2 Trigger to throw error if annual revenue is less than 1000
     //Scenario 3 Create a contact with same name when account is inserted
     //Scenario 4 If account name is modiied throw error that name modification not allowed
     //Scenario 5 If account billing address update associated contact mailing address
+    //Scenario 6 An Active Account cannot be deleted
+    //Scenario 7 Send email to current user when account is deleted
+    //Scenario 8 Send email to current user when account is undeleted or restored
     if(trigger.isInsert){
         if(trigger.isBefore){
             for (Account a : Trigger.new) {
@@ -59,5 +62,37 @@ trigger AccountTrigger on Account (before insert, after insert, before update, a
             }
             if(contactsToUpdate.size()> 0) update contactsToUpdate;
         }
+    }
+    else if(trigger.isDelete){
+        /*SCENARIO 6*/
+        if(trigger.isBefore){
+            for(Account a : trigger.old){
+                if(a.Active__c == 'Yes') a.addError('Active account cannot be deleted');
+            }
+        }
+        /*SCENARIO 7*/
+        else if(trigger.isAfter){
+            List<Messaging.SingleEmailMessage> mailList = new List<Messaging.SingleEmailMessage>();
+            for(Account a : trigger.old){
+                Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                mail.setToAddresses(new String[] {UserInfo.getUserEmail()});
+                mail.setSubject(a.Name + ' is deleted.');
+				mail.setPlainTextBody('Annual Revenue : '+ a.AnnualRevenue );
+				mailList.add(mail);
+            }
+            Messaging.sendEmail(mailList);
+        }
+    }
+    else if(trigger.isUndelete && trigger.isAfter){
+        /*SCENARIO 8*/
+        List<Messaging.SingleEmailMessage> mailList = new List<Messaging.SingleEmailMessage>();
+        for(Account a : trigger.new){
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setToAddresses(new String[] {UserInfo.getUserEmail()});
+            mail.setSubject(a.Name + ' is restored.');
+            mail.setPlainTextBody('Account Owner : '+a.OwnerId +' Annual Revenue : '+ a.AnnualRevenue );
+            mailList.add(mail);
+        }
+        Messaging.sendEmail(mailList);
     }
 }
