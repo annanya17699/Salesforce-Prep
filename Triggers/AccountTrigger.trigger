@@ -1,12 +1,13 @@
 trigger AccountTrigger on Account (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
-    //SCENARIO 1 :  Trigger to copy billing address to shipping address on insert of account
-    //SCENARIO 2 :  Trigger to throw error if annual revenue is less than 1000
-    //SCENARIO 3 :  Create a contact with same name when account is inserted
-    //SCENARIO 4 :  If account name is modiied throw error that name modification not allowed
-    //SCENARIO 5 :  If account billing address update associated contact mailing address
-    //SCENARIO 6 :  An Active Account cannot be deleted
-    //SCENARIO 7 :  Send email to current user when account is deleted
-    //SCENARIO 8 :  Send email to current user when account is undeleted or restored
+    //SCENARIO 1 : Trigger to copy billing address to shipping address on insert of account
+    //SCENARIO 2 : Trigger to throw error if annual revenue is less than 1000
+    //SCENARIO 3 : Create a contact with same name when account is inserted
+    //SCENARIO 4 : If account name is modiied throw error that name modification not allowed
+    //SCENARIO 5 : If account billing address update associated contact mailing address
+    //SCENARIO 6 : An Active Account cannot be deleted
+    //SCENARIO 7 : Send email to current user when account is deleted
+    //SCENARIO 8 : Send email to current user when account is undeleted or restored
+    //SCENARIO 9 : Bypass trigger if child account is inserted
     
     if(trigger.isInsert){
         if(trigger.isBefore){
@@ -18,6 +19,11 @@ trigger AccountTrigger on Account (before insert, after insert, before update, a
         else if(Trigger.isAfter){
             /*SCENARIO 3*/
             AccountTriggerHandler.insertAscContacts(trigger.new);
+            /*SCENARIO 9*/
+            if(!AccountTriggerHandler.isTriggerBypassed){
+                AccountTriggerHandler.isTriggerBypassed = true;
+                AccountTriggerHandler.createChildAcc(trigger.new);
+            }
         }
     }
     else if(trigger.isUpdate){

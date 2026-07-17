@@ -1,4 +1,22 @@
 public class AccountTriggerHandler {
+    public static boolean isTriggerBypassed = false;
+    
+    public static void createChildAcc(List<Account> accList){
+        List<Account> childAccList = new List<Account>();
+        for(Account a : accList){
+            Account childAcc = new Account();
+            childAcc.Name = a.name + ' Subbranch';
+            childAcc.BillingCity = a.BillingCity;
+            childAcc.BillingStateCode = a.BillingStateCode;
+            childAcc.BillingPostalCode = a.BillingPostalCode;
+            childAcc.BillingStreet = a.BillingStreet;
+            childAcc.BillingCountryCode = a.BillingCountryCode;
+            childAcc.ParentId = a.Id;
+            childAccList.add(childAcc);
+        }
+        if(childAccList.size() > 0) insert childAccList;
+    }
+    
     public static void sendEmailOnUndelete(List<Account> accList){
         List<Messaging.SingleEmailMessage> mailList = new List<Messaging.SingleEmailMessage>();
         for(Account a : accList){
