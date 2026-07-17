@@ -9,13 +9,16 @@ trigger AccountTrigger on Account (before insert, after insert, before update, a
     //SCENARIO 8 : Send email to current user when account is undeleted or restored
     //SCENARIO 9 : Bypass trigger if child account is inserted
     
+    /*INSERT EVENT*/
     if(trigger.isInsert){
+        /*BEFORE INSERT EVENT*/
         if(trigger.isBefore){
             /*SCENARIO 2*/
             AccountTriggerHandler.verifyRevenue(trigger.new);
             /*SCENARIO 1*/
             AccountTriggerHandler.updateShippingAddressOnInsert(trigger.new);
         }
+        /*AFTER INSERT EVENT*/
         else if(Trigger.isAfter){
             /*SCENARIO 3*/
             AccountTriggerHandler.insertAscContacts(trigger.new);
@@ -26,26 +29,33 @@ trigger AccountTrigger on Account (before insert, after insert, before update, a
             }
         }
     }
+    /*UPDATE EVENT*/
     else if(trigger.isUpdate){
-        /*SCENARIO 4*/
+        /*BEFORE UPDATE EVENT*/
         if(trigger.isBefore){
+            /*SCENARIO 4*/
             AccountTriggerHandler.restrictActiveAccNameModification(trigger.new, trigger.oldMap);
         }
+        /*AFTER UPDATE EVENT*/
         else if(trigger.isAfter){
             /*SCENARIO 5*/
             AccountTriggerHandler.updateMailAddForContacts(trigger.new, trigger.oldMap);
         }
     }
+    /*DELETE EVENT*/
     else if(trigger.isDelete){
-        /*SCENARIO 6*/
+        /*BEFORE DELETE EVENT*/
         if(trigger.isBefore){
+            /*SCENARIO 6*/
             AccountTriggerHandler.restrictActiveAccDel(trigger.old);
         }
-        /*SCENARIO 7*/
+        /*AFTER DELETE EVENT*/
         else if(trigger.isAfter){
+            /*SCENARIO 7*/
             AccountTriggerHandler.sendEmailOnDelete(trigger.old);
         }
     }
+    /*AFTER UNDELETE EVENT*/
     else if(trigger.isUndelete && trigger.isAfter){
         /*SCENARIO 8*/
         AccountTriggerHandler.sendEmailOnUndelete(trigger.new);

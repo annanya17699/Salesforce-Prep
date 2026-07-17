@@ -1,6 +1,10 @@
 public class AccountTriggerHandler {
     public static boolean isTriggerBypassed = false;
-    
+    /*		
+    * @param : accList - new inserted account list
+    * @return : void
+    * @doc : Create child accounts on insertion of new account
+    */
     public static void createChildAcc(List<Account> accList){
         List<Account> childAccList = new List<Account>();
         for(Account a : accList){
@@ -17,6 +21,11 @@ public class AccountTriggerHandler {
         if(childAccList.size() > 0) insert childAccList;
     }
     
+    /*		
+    * @param : accList - new restored account list
+    * @return : void
+    * @doc : Send email to current user on restore of deleted account
+    */
     public static void sendEmailOnUndelete(List<Account> accList){
         List<Messaging.SingleEmailMessage> mailList = new List<Messaging.SingleEmailMessage>();
         for(Account a : accList){
@@ -28,7 +37,11 @@ public class AccountTriggerHandler {
         }
         Messaging.sendEmail(mailList);
     }
-    
+    /*		
+    * @param : accList - old deleted account list
+    * @return : void
+    * @doc : Send email to current user on deletion of account
+    */
     public static void sendEmailOnDelete(List<Account> accList){
         List<Messaging.SingleEmailMessage> mailList = new List<Messaging.SingleEmailMessage>();
         for(Account a : accList){
@@ -40,13 +53,23 @@ public class AccountTriggerHandler {
         }
         Messaging.sendEmail(mailList);
     }
-    
+
+    /*		
+    * @param : accList - updated account list
+    * @return : void
+    * @doc : Restrict modification of active account
+    */    
     public static void restrictActiveAccDel(List<Account> accList){
         for(Account a : accList){
             if(a.Active__c == 'Yes') a.addError('Active account cannot be deleted');
         }
     }
     
+    /*		
+    * @param : accList - updated account list
+    * @return : void
+    * @doc : Annual Revenue can not be less than 1000
+    */
     public static void verifyRevenue(List<Account> accList){
         for (Account a : accList) {
             if(a.AnnualRevenue < 1000){
@@ -55,6 +78,11 @@ public class AccountTriggerHandler {
         }
     }
     
+    /*		
+    * @param : accList - new account list
+    * @return : void
+    * @doc : Copy Shipping address from billing address if empty
+    */
     public static void updateShippingAddressOnInsert(List<Account> accList){
         for (Account a : accList) {
             if(a.ShippingAddress == null){
@@ -67,6 +95,11 @@ public class AccountTriggerHandler {
         }
     }
     
+    /*		
+    * @param : accList - new account list
+    * @return : void
+    * @doc : Insert child Contact
+    */
     public static void insertAscContacts(List<Account> accList){
         List<Contact> contactListToInsert = new List<Contact>();
         for (Account a : accList) {
@@ -80,12 +113,24 @@ public class AccountTriggerHandler {
         if(contactListToInsert.size()> 0) insert contactListToInsert;
     }
     
+    /*		
+    * @param : accList - updated account list
+    * @param : idVsAccMap - old map of id Vs Acc
+    * @return : void
+    * @doc : Restrict Account Name modification
+    */
     public static void restrictActiveAccNameModification(List<Account> accList, Map<Id, Account> idVsAccMap){
         for(Account a : accList){
             if(idVsAccMap.get(a.Id).Name != a.Name) a.addError('Account name cannot be modified');
         }
     }
     
+    /*		
+    * @param : accList - updated account list
+    * @param : idVsAccMap - old map of id Vs Acc
+    * @return : void
+    * @doc : Update Mailing address of child Contacts if parent billing address changes
+    */
     public static void updateMailAddForContacts(List<Account> accList, Map<Id, Account> idVsAccMap){
         Set<Id> accIds = new Set<Id>();
         for(Account a : accList){
