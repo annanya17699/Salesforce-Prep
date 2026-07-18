@@ -3,7 +3,7 @@ trigger ContactTrigger on Contact (before insert, after insert, before update, a
     if(Trigger.isInsert){
         /*BEFORE INSERT EVENT*/
         if(Trigger.isBefore){
-            
+            ContactTriggerHandler.checkContactDetails(trigger.new);
         }
         /*AFTER INSERT EVENT*/
         else if(Trigger.isAfter){
@@ -17,7 +17,7 @@ trigger ContactTrigger on Contact (before insert, after insert, before update, a
     else if(Trigger.isUpdate){
         /*BEFORE UPDATE EVENT*/
         if(Trigger.isBefore){
-            
+            ContactTriggerHandler.checkContactDetails(trigger.new);
         }
         /*AFTER UPDATE EVENT*/
         else if(Trigger.isAfter){

@@ -24,4 +24,11 @@ public class ContactTriggerHandler {
         }
         if(updateContact.size() > 0) update updateContact;
     }
+    
+    //Manadtory to have Email and Phone while inserting or updating contact
+    public static void checkContactDetails(List<Contact> contactList){
+        for(Contact c : contactList){
+            if(c.Email == null || c.Phone == null) c.addError('Email and Phone no are mandatory');
+        }
+    }
 }
