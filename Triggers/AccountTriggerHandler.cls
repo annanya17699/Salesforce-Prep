@@ -1,6 +1,9 @@
 public class AccountTriggerHandler {
+    
     public static boolean isTriggerBypassed = false;
-    /*		
+    
+    /*
+    * SCENARIO 9 : Bypass trigger if child account is inserted		
     * @param : accList - new inserted account list
     * @return : void
     * @doc : Create child accounts on insertion of new account
@@ -21,7 +24,8 @@ public class AccountTriggerHandler {
         if(childAccList.size() > 0) insert childAccList;
     }
     
-    /*		
+    /*
+    * SCENARIO 8 : Send email to current user when account is undeleted or restored		
     * @param : accList - new restored account list
     * @return : void
     * @doc : Send email to current user on restore of deleted account
@@ -37,7 +41,8 @@ public class AccountTriggerHandler {
         }
         Messaging.sendEmail(mailList);
     }
-    /*		
+    /*
+    * SCENARIO 7 : Send email to current user when account is deleted		
     * @param : accList - old deleted account list
     * @return : void
     * @doc : Send email to current user on deletion of account
@@ -54,7 +59,8 @@ public class AccountTriggerHandler {
         Messaging.sendEmail(mailList);
     }
 
-    /*		
+    /*
+    * SCENARIO 6 : An Active Account cannot be deleted		
     * @param : accList - updated account list
     * @return : void
     * @doc : Restrict modification of active account
@@ -64,8 +70,9 @@ public class AccountTriggerHandler {
             if(a.Active__c == 'Yes') a.addError('Active account cannot be deleted');
         }
     }
-    
-    /*		
+    /*SCENARIO 2*/    
+    /*
+    * SCENARIO 2 : Trigger to throw error if annual revenue is less than 1000		
     * @param : accList - updated account list
     * @return : void
     * @doc : Annual Revenue can not be less than 1000
@@ -77,8 +84,9 @@ public class AccountTriggerHandler {
             }    
         }
     }
-    
-    /*		
+
+    /*
+    * SCENARIO 1 : Trigger to copy billing address to shipping address on insert of account		
     * @param : accList - new account list
     * @return : void
     * @doc : Copy Shipping address from billing address if empty
@@ -95,7 +103,8 @@ public class AccountTriggerHandler {
         }
     }
     
-    /*		
+    /*	
+    * SCENARIO 3 : Create a contact with same name when account is inserted	
     * @param : accList - new account list
     * @return : void
     * @doc : Insert child Contact
@@ -112,8 +121,9 @@ public class AccountTriggerHandler {
         
         if(contactListToInsert.size()> 0) insert contactListToInsert;
     }
-    
+  
     /*		
+    * SCENARIO 4 : If account name is modiied throw error that name modification not allowed
     * @param : accList - updated account list
     * @param : idVsAccMap - old map of id Vs Acc
     * @return : void
@@ -126,6 +136,7 @@ public class AccountTriggerHandler {
     }
     
     /*		
+    * SCENARIO 5 : If account billing address update associated contact mailing address
     * @param : accList - updated account list
     * @param : idVsAccMap - old map of id Vs Acc
     * @return : void
